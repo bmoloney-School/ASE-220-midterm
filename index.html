@@ -18,11 +18,11 @@
     <style>
     </style>
     <!-- Custom styles for this template -->
-    <link href="./styles/index.css" rel="stylesheet">
+    <link href="./styles/template.css" rel="stylesheet">
 </head>
 
-<body>
-    <div class="container" id="navbar">
+<body onload="refeshPodcasts()">
+    <div class=" container" id="navbar">
         <header
             class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
             <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
@@ -31,22 +31,137 @@
                 <li><a href="./rules.html" class="nav-link px-2 link-dark">Rules</a></li>
                 <li><a href="about.html" class="nav-link px-2 link-dark">About</a></li>
             </ul>
-            <div class="col-md-3 text-end">
+            <div class="col-md-3 text-end" id="loginButtons">
                 <a type="button" href="./signIn.html" class="btn btn-outline-primary me-2">Login</a>
                 <a type="button" href="./createAccount.html" class="btn btn-primary">Sign-up</a>
             </div>
         </header>
     </div>
     <main>
-        <div>
-            <form id="filter">
+        <form id="filter" class="sticky-top px-4 py-3 w-25 rounded mb-2 ms-4">
+            <h1 class="h3 px-2">Filters</h1>
+            <div class="input-group input-group-sm mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-sm">Year</span>
+                </div>
+                <input id="year-filter" type="text" class="form-control" placeholder="YYYY" aria-label="Small"
+                    aria-describedby="inputGroup-sizing-sm">
+            </div>
+            <div class="input-group input-group-sm mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-sm">Author</span>
+                </div>
+                <input id="author-filter" type="text" class="form-control" placeholder="name" aria-label="Small"
+                    aria-describedby="inputGroup-sizing-sm">
+            </div>
+            <div class="input-group input-group-sm mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-sm">DOI#</span>
+                </div>
+                <input id="doi-filter" type="text" class="form-control" placeholder="#" aria-label="Small"
+                    aria-describedby="inputGroup-sizing-sm">
+            </div>
+            <div class="input-group input-group-sm mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-sm">Keyword</span>
+                </div>
+                <input id="keyword-filter" type="text" class="form-control" placeholder="(Science, Computing, etc)"
+                    aria-label="Small" aria-describedby="inputGroup-sizing-sm">
+            </div>
+            <button id="updateFilters" type="button">Update</button>
+        </form>
+        <div class="container align-content-center">
+            <div class="row" id="podcastHolder">
 
-            </form>
+            </div>
         </div>
+        <a href="./uploadPodcast.html" class="float">
+            <img src="./assets/icons8-plus-48.png">
+        </a>
     </main>
     <footer>
 
     </footer>
+    <script src="./shared.js"></script>
+    <script>
+        let currentFilters = {
+            year: "",
+            author: "",
+            doi: "",
+            keyword: ""
+        }
+
+        const userId = getAllUrlParams().id;
+        const podcastDB = "https://jsonblob.com/api/jsonBlob/952297235711016960"
+        function renderPodcast(title, author, doi, date, link, parentElement) {
+            const podcastCard = `
+                <div class="card w-75 my-4">
+                    <h5 class="card-header">${title}</h5>
+                    <div class="card-body container align-content-center">
+                        <h5 class="card-title">Author:  ${author}</h5>
+                        <p class="card-text">DOI#:  ${doi}</p>
+                        <p class="card-text">Date:  ${date}</p>
+                        <a href="${link}" class="btn btn-primary" target="_blank">Listen</a>
+                    </div>
+                </div>`
+            parentElement.append(podcastCard);
+        }
+
+        function updateFilters() {
+            currentFilters.year = $('#year-filter').val();
+            currentFilters.author = $('#author-filter').val();
+            currentFilters.doi = $('#doi-filter').val();
+            currentFilters.keyword = $('#keyword-filter').val();
+
+        }
+        // a necessary evil of having to keep signed in state via query strings
+        function updateLinks() {
+            if (userId) {
+                let links = $('a:not("#logoutButton")')
+                links.each(function () {
+                    console.log($(this).attr('href'))
+                    $(this).attr('href', $(this).attr('href') + "?id=" + userId)
+                    //$(this).attr('href').val($(this).attr('href').val() += "?id=" + userId)
+                })
+            }
+        }
+
+        // renderPodcast("Title", "Johnny doe", 77776767765534234, 2019, "https://youtube.com", $("#podcastHolder"))
+
+        function refeshPodcasts() {
+            $("#podcastHolder").html("")
+            $.getJSON(podcastDB, function (data) {
+                let showPodcast = true;
+                data.podcasts.forEach(podcast => {
+                    if (!(podcast.DOI.includes(currentFilters.doi) || currentFilters.doi == "")) {
+                        showPodcast = false;
+                    }
+                    if (!(podcast.publishedDate.includes(currentFilters.year) || currentFilters.year == "")) {
+                        showPodcast = false;
+                    }
+                    if (!(podcast.author.includes(currentFilters.author) || currentFilters.author == "")) {
+                        showPodcast = false;
+                    }
+                    if (!(podcast.keywords.includes(currentFilters.keyword) || currentFilters.keyword == "")) {
+                        showPodcast = false
+                    }
+                    if (showPodcast) {
+                        renderPodcast(podcast.title, podcast.author, podcast.DOI, podcast.publishedDate, podcast.url, $("#podcastHolder"))
+                    }
+
+                });
+                // by doing this, we only get the list of existing users once and save some bandwith
+            })
+        }
+
+        $(document).on('click', '#filter > button', () => {
+            updateFilters()
+            refeshPodcasts()
+        });
+
+        updateLoginButtons(userId);
+        updateLinks()
+    </script>
 </body>
 
 </html>
