@@ -19,51 +19,51 @@
     <link href="./styles/signin.css" rel="stylesheet">
 </head>
 
-<body class="text-center">
-    <main class="form-signin">
-        <form id="create-account">
+<body class="text-center" onload="checkSignIn()">
+    <main class="form">
+        <form id="uploadPodcast">
             <img class="mb-4 rounded"
                 src="https://i0.wp.com/www.nathanivey.com/wp-content/uploads/2015/04/appendipity-podcast-logo.png?w=400&ssl=1"
                 alt="" height="57">
             <h1 class="h3 mb-3 fw-normal">Upload Podcast</h1>
 
             <div class="form-floating py-1 col">
-                <input type="text" class="form-control" id="author" placeholder="first">
+                <input type="text" class="form-control" id="author" placeholder="Author">
                 <label for="author">Author</label>
             </div>
             <div class="form-floating py-1">
-                <input type="text" class="form-control" id="title" placeholder="name@example.com">
+                <input type="text" class="form-control" id="title">
                 <label for="title">Title</label>
             </div>
             <div class="form-floating py-1">
-                <input type="text" class="form-control" id="title" placeholder="name@example.com">
+                <input type="text" class="form-control" id="journal">
                 <label for="title">Journal</label>
             </div>
             <div class="form-floating py-1">
-                <input type="date" class="form-control" id="organization" placeholder="name@example.com">
+                <input type="date" class="form-control" id="publishedDate">
                 <label for="organization">Published Date</label>
             </div>
             <div class="form-floating py-1">
-                <input type="text" class="form-control" id="organization" placeholder="name@example.com">
+                <input type="text" class="form-control" id="doi">
                 <label for="organization">DOI#</label>
             </div>
             <div class="form-floating py-1">
-                <input type="text" class="form-control" id="organization" placeholder="name@example.com">
+                <input type="text" class="form-control" id="keywords">
                 <label for="organization">Keywords (Seperated by a space)</label>
             </div>
             <div class="form-floating py-1">
-                <input list="browsers" class="form-control" id="organization" placeholder="name@example.com">
-                <datalist id="browsers">
+                <input list="category-list" class="form-control" id="category">
+                <datalist id="category-list">
                     <option value="Computer Science">
                     <option value="Healthcare">
                     <option value="Education">
                     <option value="Music">
                     <option value="Other">
                 </datalist>
-                <label for="organization">Category</label>
+                <label for="category">Category</label>
             </div>
             <div class="form-floating py-1">
-                <input type="text" class="form-control" id="organization" placeholder="name@example.com">
+                <input type="text" class="form-control" id="url">
                 <label for="organization">Url</label>
             </div>
 
@@ -74,35 +74,114 @@
             <p id="DoiAlreadyExists" class="hidden text-danger vaidationMessage">A podcast for this document already
                 exists</p>
             <p id="MissingFields" class="hidden text-danger vaidationMessage">All fields are required</p>
-
-            <button id="create-account-submit" class="w-100 btn btn-lg btn-primary" type="button">Submit
+            <button id="submit" class="w-100 btn btn-lg btn-primary" type="button">Submit
                 Podcast</button>
         </form>
-        <a class="button w-50 btn btn-md btn-primary my-2" href="./index.html">Back to Home</a>
+        <a id="home" class="button w-50 btn btn-md btn-primary my-2" href="./index.html">Back to Home</a>
         <p class="mt-5 mb-3 text-muted">&copy; 2017-2021</p>
     </main>
+    <script src="./shared.js"></script>
     <script>
-        const podcastDB = "http://jsonblob.com/api/jsonBlob/952297235711016960";
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        const podcastDB = "https://jsonblob.com/api/jsonBlob/952297235711016960";
+        // for author information
         const userDB = "https://jsonblob.com/api/jsonBlob/952011366311673856";
+        const userId = getAllUrlParams().id;
+        // keep storing Id in the url
+        $("#home").attr('href', $(this).attr('href') + "?id=" + userId)
+
+        // Validation and submit
+        $(document).on('click', '#uploadPodcast > button', () => {
+            let validated = true;
+            $(".vaidationMessage").addClass('hidden')
+            $(".form-floating > input").removeClass("border border-danger rounded");
+            $("#manuscript").removeClass("border border-danger rounded");
+
+            $("#uploadPodcast > div input").each(function () {
+                console.log($(this).val())
+                if ($(this).val() == "") {
+                    $(".form-floating > input").addClass("border border-danger rounded");
+                    $('#MissingFields').removeClass("hidden");
+                    validated = false;
+                }
+            })
+            if ($("#manuscript").val() === "") {
+                $("#manuscript").addClass("border border-danger rounded");
+                $('#MissingFields').removeClass("hidden");
+                validated = false;
+            }
+
+            $.getJSON(podcastDB, function (data) {
+                console.log(data.podcasts)
+                data.podcasts.forEach(podcast => {
+                    if (podcast.DOI === $("#doi").val()) {
+                        $('#DoiAlreadyExists').removeClass("hidden");
+                        $("#doi").addClass("border border-danger rounded");
+                        validated = false;
+                    }
+                })
+            }).then(data => {
+                if (validated) {
+                    //This is the best way I found to append the new user to the existing ones.
+                    let existingPodcasts = [];
+                    let users = [];
+                    let author = {};
+                    $.each(data.podcasts, function (index, podcast) {
+                        existingPodcasts.push(podcast);
+                        console.log(existingPodcasts)
+                    });
+                    $.getJSON(userDB, function (userData) {
+                        $.each(userData.users, function (index, user) {
+                            users.push(user);
+                            console.log(users)
+                        });
+                        // Since there isnt any delete functionality at the moment, using the index as an ID works
+                        author = users[userId]
+                        console.log(author)
+                    })
+                    existingPodcasts.push({
+                        "author": $("#author").val(),
+                        "title": $("#title").val(),
+                        "userId": userId,
+                        "journal": $("#journal").val(),
+                        "publishedDate": $("#publishedDate").val(),
+                        "DOI": $("#doi").val(),
+                        "keywords": $("#keywords").val(),
+                        "url": $("#url").val(),
+                        "category": $("#category").val(),
+                        "manuscript": $("#manuscript").val()
+                    });
+                    let newPodcastsObject = {
+                        "podcasts": existingPodcasts
+                    }
+                    console.log(newPodcastsObject)
+
+                    $.ajax({
+                        url: podcastDB,
+                        type: 'PUT',
+                        data: JSON.stringify(newPodcastsObject),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: 'json',
+                        success: function (response, status, xhr) {
+                            console.log(response);
+                        },
+                        error: function (error) {
+                            console.log(error);
+                        }
+                        //Wait until call to api is complete then redirect to home page
+                    }).then(() => {
+                        console.log("HIT")
+                        window.location.replace("./index.html");
+                    });
+                }
+            })
+        });
+
+        // user cant upload if not signed in
+        function checkSignIn() {
+            if (!userId) {
+                window.location.replace("./login.html");
+            }
+        }
 
         $(document).on('click', '#create-account > button', () => {
             // reset validation on new submit

@@ -68,7 +68,7 @@
                 <input id="keyword-filter" type="text" class="form-control" placeholder="(Science, Computing, etc)"
                     aria-label="Small" aria-describedby="inputGroup-sizing-sm">
             </div>
-            <button id="updateFilters" type="button">Update</button>
+            <button id="updateFilters" class="btn btn-outline-primary" type="button">Update</button>
         </form>
         <div class="container align-content-center">
             <div class="row" id="podcastHolder">
@@ -84,6 +84,7 @@
     </footer>
     <script src="./shared.js"></script>
     <script>
+
         let currentFilters = {
             year: "",
             author: "",
@@ -93,6 +94,7 @@
 
         const userId = getAllUrlParams().id;
         const podcastDB = "https://jsonblob.com/api/jsonBlob/952297235711016960"
+
         function renderPodcast(title, author, doi, date, link, parentElement) {
             const podcastCard = `
                 <div class="card w-75 my-4">
@@ -112,8 +114,9 @@
             currentFilters.author = $('#author-filter').val();
             currentFilters.doi = $('#doi-filter').val();
             currentFilters.keyword = $('#keyword-filter').val();
-
+            console.log(currentFilters)
         }
+
         // a necessary evil of having to keep signed in state via query strings
         function updateLinks() {
             if (userId) {
@@ -121,18 +124,15 @@
                 links.each(function () {
                     console.log($(this).attr('href'))
                     $(this).attr('href', $(this).attr('href') + "?id=" + userId)
-                    //$(this).attr('href').val($(this).attr('href').val() += "?id=" + userId)
                 })
             }
         }
 
-        // renderPodcast("Title", "Johnny doe", 77776767765534234, 2019, "https://youtube.com", $("#podcastHolder"))
-
         function refeshPodcasts() {
             $("#podcastHolder").html("")
             $.getJSON(podcastDB, function (data) {
-                let showPodcast = true;
                 data.podcasts.forEach(podcast => {
+                    let showPodcast = true;
                     if (!(podcast.DOI.includes(currentFilters.doi) || currentFilters.doi == "")) {
                         showPodcast = false;
                     }
@@ -142,8 +142,9 @@
                     if (!(podcast.author.includes(currentFilters.author) || currentFilters.author == "")) {
                         showPodcast = false;
                     }
+                    console.log(podcast.keywords.includes(currentFilters.keyword))
                     if (!(podcast.keywords.includes(currentFilters.keyword) || currentFilters.keyword == "")) {
-                        showPodcast = false
+                        showPodcast = false;
                     }
                     if (showPodcast) {
                         renderPodcast(podcast.title, podcast.author, podcast.DOI, podcast.publishedDate, podcast.url, $("#podcastHolder"))
