@@ -135,9 +135,6 @@
                 // by doing this, we only get the list of existing users once and save some bandwith
             }).then(() => {
                 podcasts.forEach(podcast => {
-                    if (podcast.category != lastCategory) {
-                        renderHeader(podcast.category)
-                    }
                     let showPodcast = true;
                     if (!(podcast.DOI.includes(currentFilters.doi) || currentFilters.doi == "")) {
                         showPodcast = false;
@@ -153,6 +150,9 @@
                         showPodcast = false;
                     }
                     if (showPodcast) {
+                        if (podcast.category != lastCategory) {
+                            renderHeader(podcast.category)
+                        }
                         lastCategory = podcast.category;
                         renderPodcast(podcast.title, podcast.author, podcast.userId, podcast.DOI, podcast.publishedDate, podcast.url, $("#podcastHolder"))
                     }
