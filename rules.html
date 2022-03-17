@@ -77,6 +77,18 @@
     <script src="./shared.js"></script>
     <script>
         const userId = getAllUrlParams().id;
+        function updateLinks() {
+            if (userId) {
+                // Dont want the logout button to have the id
+                let links = $('a:not("#logoutButton")')
+                links.each(function () {
+                    console.log($(this).attr('href'))
+                    $(this).attr('href', $(this).attr('href') + "?id=" + userId)
+                })
+            }
+        }
+        updateLoginButtons(userId);
+        updateLinks();
     </script>
 </body>
 

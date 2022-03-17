@@ -95,12 +95,12 @@
         const userId = getAllUrlParams().id;
         const podcastDB = "https://jsonblob.com/api/jsonBlob/952297235711016960"
 
-        function renderPodcast(title, author, doi, date, link, parentElement) {
+        function renderPodcast(title, author, userId, doi, date, link, parentElement) {
             const podcastCard = `
                 <div class="card w-75 my-4">
                     <h5 class="card-header">${title}</h5>
                     <div class="card-body container align-content-center">
-                        <h5 class="card-title">Author:  ${author}</h5>
+                        <h5 class="card-title">Author:  <a href="./user.html?id=${userId}"">${author}</a></h5>
                         <p class="card-text">DOI#:  ${doi}</p>
                         <p class="card-text">Date:  ${date}</p>
                         <a href="${link}" class="btn btn-primary" target="_blank">Listen</a>
@@ -120,6 +120,7 @@
         // a necessary evil of having to keep signed in state via query strings
         function updateLinks() {
             if (userId) {
+                // Dont want the logout button to have the id
                 let links = $('a:not("#logoutButton")')
                 links.each(function () {
                     console.log($(this).attr('href'))
@@ -147,7 +148,7 @@
                         showPodcast = false;
                     }
                     if (showPodcast) {
-                        renderPodcast(podcast.title, podcast.author, podcast.DOI, podcast.publishedDate, podcast.url, $("#podcastHolder"))
+                        renderPodcast(podcast.title, podcast.author, podcast.userId, podcast.DOI, podcast.publishedDate, podcast.url, $("#podcastHolder"))
                     }
 
                 });
