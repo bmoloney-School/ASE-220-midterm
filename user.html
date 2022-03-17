@@ -72,6 +72,10 @@
         const userDB = "https://jsonblob.com/api/jsonBlob/952011366311673856";
         const podcastDB = "https://jsonblob.com/api/jsonBlob/952297235711016960";
 
+        if (!userId) {
+            window.location.replace("./login.html")
+        }
+
         let users = []
         let podcasts = []
 
@@ -112,11 +116,11 @@
             // by doing this, we only get the list of existing users once and save some bandwith
         }).then(() => {
             podcasts.forEach(podcast => {
-                renderPodcast(podcast.title, podcast.author, podcast.doi, podcast.publishedDate, podcast.url, $("#podcasts"))
+                renderPodcast(podcast.title, podcast.author, podcast.DOI, podcast.publishedDate, podcast.url, $("#podcasts"))
             });
         })
-
         updateLoginButtons(userId);
+        updateLinks();
     </script>
     </div>
 </body>

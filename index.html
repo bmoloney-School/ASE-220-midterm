@@ -119,22 +119,25 @@
             console.log(currentFilters)
         }
 
-        // a necessary evil of having to keep signed in state via query strings
-        function updateLinks() {
-            if (userId) {
-                // Dont want the logout button to have the id
-                let links = $('a:not("#logoutButton")')
-                links.each(function () {
-                    console.log($(this).attr('href'))
-                    $(this).attr('href', $(this).attr('href') + "?id=" + userId)
-                })
-            }
+        function renderHeader(headerText) {
+            let parent = $("#podcastHolder").append(`<hr/><h1 class="h2">${headerText}</h1>`)
         }
 
         function refeshPodcasts() {
             $("#podcastHolder").html("")
+            let podcasts = [];
+            let lastCategory = "";
             $.getJSON(podcastDB, function (data) {
                 data.podcasts.forEach(podcast => {
+                    podcasts.push(podcast)
+                });
+                podcasts.sort((a, b) => (a.category > b.category) ? 1 : -1)
+                // by doing this, we only get the list of existing users once and save some bandwith
+            }).then(() => {
+                podcasts.forEach(podcast => {
+                    if (podcast.category != lastCategory) {
+                        renderHeader(podcast.category)
+                    }
                     let showPodcast = true;
                     if (!(podcast.DOI.includes(currentFilters.doi) || currentFilters.doi == "")) {
                         showPodcast = false;
@@ -150,12 +153,14 @@
                         showPodcast = false;
                     }
                     if (showPodcast) {
+                        lastCategory = podcast.category;
                         renderPodcast(podcast.title, podcast.author, podcast.userId, podcast.DOI, podcast.publishedDate, podcast.url, $("#podcastHolder"))
                     }
+                })
 
-                });
-                // by doing this, we only get the list of existing users once and save some bandwith
-            })
+            }
+
+            )
         }
 
         $(document).on('click', '#filter > button', () => {

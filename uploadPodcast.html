@@ -87,8 +87,8 @@
         const userDB = "https://jsonblob.com/api/jsonBlob/952011366311673856";
         const userId = getAllUrlParams().id;
         // keep storing Id in the url
-        $("#home").attr('href', $(this).attr('href') + "?id=" + userId)
-
+        $("#home").attr('href', $('#home').attr('href') + "?id=" + userId)
+        console.log($("#home").attr('href'))
         // Validation and submit
         $(document).on('click', '#uploadPodcast > button', () => {
             let validated = true;

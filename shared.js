@@ -71,3 +71,12 @@ function updateLoginButtons(userId) {
         $("#loginButtons").html(`<a type="button" id="logoutButton" href="${window.location.href.split('?')[0]}" class="btn btn-outline-primary me-2">Logout</a>`)
     }
 }
+function updateLinks() {
+    if (userId) {
+        // Dont want the logout button to have the id
+        let links = $('a:not("#logoutButton")')
+        links.each(function () {
+            $(this).attr('href', $(this).attr('href') + "?id=" + userId)
+        })
+    }
+}

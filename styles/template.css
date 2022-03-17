@@ -38,3 +38,9 @@ body {
 .my-float{
 	margin-top:22px;
 }
+a:any-link {
+    color: black;
+}
+.card {
+    padding: 0% 0% 1% 0% ;
+}
