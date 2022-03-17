@@ -1,8 +1,5 @@
 <!DOCTYPE html>
 <html>
-<!--- THIS FILE SHOULD CONTAIN NON EDITABLE INFORMATION ABOUT THE USER OR AUTHOR SINCE THERE IS CURRENTLY NO DISTINCTION BETWEEN THE TWO IT SHOULD ALSO 
-    SHOW ANY PODCASTS OWNED BY THAT USER
--->
 
 <head>
     <meta charset="utf-8">
@@ -22,7 +19,7 @@
     </style>
     <!-- Custom styles for this template -->
     <link href="./styles/template.css" rel="stylesheet">
-    <link href="./styles/signin.css" rel="stylesheet">
+    <link href="./styles/user.css" rel="stylesheet">
 </head>
 
 <body class="user-layout">
@@ -42,148 +39,84 @@
         </header>
     </div>
 
-    <div class="row text-center">
-        <main class="form-signin">
-            <form id="create-account">
-                <img class="mb-4 rounded"
-                    src="https://i0.wp.com/www.nathanivey.com/wp-content/uploads/2015/04/appendipity-podcast-logo.png?w=400&ssl=1"
-                    alt="" height="57">
-                <h1 class="h3 mb-3 fw-normal">Create Account</h1>
-                <div class="row">
-                    <div class="form-floating py-1 col">
-                        <input type="text" class="form-control" id="firstName" placeholder="first">
-                        <label for="firstName">First Name *</label>
+
+    <main class="container">
+        <div class="row">
+            <div class="col align-self-start card w-75 my-4" id="userInformation">
+                <div>
+                    <h1 class="h4 card-header">Name:</h1>
+                    <p id="name"></p>
+                </div>
+                <div>
+                    <h1 class="h4">Email:</h1>
+                    <p id="email"></p>
+                </div>
+                <div>
+                    <h1 class="h4">Title:</h1>
+                    <p id="title"></p>
+                </div>
+                <div>
+                    <h1 class="h4">Organization:</h1>
+                    <p id="org"></p>
+                </div>
+            </div>
+            <div class="col" id="podcasts">
+                <h2></h2>
+
+            </div>
+        </div>
+    </main>
+    <script src="./shared.js"></script>
+    <script>
+        const userId = getAllUrlParams().id;
+        const userDB = "https://jsonblob.com/api/jsonBlob/952011366311673856";
+        const podcastDB = "https://jsonblob.com/api/jsonBlob/952297235711016960";
+
+        let users = []
+        let podcasts = []
+
+        function renderPodcast(title, author, doi, date, link, parentElement) {
+            const podcastCard = `
+                <div class="card w-75 my-4">
+                    <h5 class="card-header">${title}</h5>
+                    <div class="card-body container align-content-center">
+                        <h5 class="card-title">Author:  ${author}</h5>
+                        <p class="card-text">DOI#:  ${doi}</p>
+                        <p class="card-text">Date:  ${date}</p>
+                        <a href="${link}" class="btn btn-primary" target="_blank">Listen</a>
                     </div>
-                    <div class="form-floating py-1 col">
-                        <input type="text" class="form-control" id="lastName" placeholder="last">
-                        <label for="lastName">Last Name *</label>
-                    </div>
-                </div>
-                <div class="form-floating py-1">
-                    <input type="email" class="form-control" id="email" placeholder="name@example.com">
-                    <label for="email">Email address *</label>
-                </div>
-                <div class="form-floating py-1">
-                    <input type="text" class="form-control" id="title" placeholder="name@example.com">
-                    <label for="title">Position/Title *</label>
-                </div>
-                <div class="form-floating py-1">
-                    <input type="text" class="form-control" id="organization" placeholder="name@example.com">
-                    <label for="organization">University/Organization *</label>
-                </div>
-                <div class="form-floating py-1">
-                    <input type="password" class="form-control" id="password" placeholder="Password">
-                    <label for="password">Password *</label>
-                </div>
-                <div class="form-floating py-1">
-                    <input type="password" class="form-control" id="passwordConfirm" placeholder="Password">
-                    <label for="passwordConfirm">ConfirmPassword *</label>
-                </div>
-                <div class="form-check pb-2">
-                    <input class="form-check-input" type="checkbox" value="" id="termsAndCondtions">
-                    <label class="form-check-label" for="termsAndCondtions">
-                        I agree to the PodScholar terms and conditions
-                    </label>
-                </div>
-                <p id="UserAlreadyExists" class="hidden text-danger vaidationMessage">user with this email
-                    already exists</p>
-                <p id="MissingFields" class="hidden text-danger vaidationMessage">All fields are required</p>
-                <p id="passwordMismatch" class="hidden text-danger vaidationMessage">Passwords do not match</p>
+                </div>`
+            parentElement.append(podcastCard);
+        }
 
-                <button id="create-account-submit" class="w-100 btn btn-lg btn-primary" type="button">Create
-                    Account</button>
-            </form>
-            <a class="button w-50 btn btn-md btn-primary my-2" href="./login.html">Back to Login</a>
-            <a class="button w-50 btn btn-md btn-primary my-2" href="./index.html">Back to Home</a>
-            <p class="mt-5 mb-3 text-muted">&copy; 2017-2021</p>
-        </main>
-        <script src="./shared.js"></script>
-        <script>
-            const userId = getAllUrlParams().id;
-
-            const userDB = "https://jsonblob.com/api/jsonBlob/952011366311673856";
-
-            $(document).on('click', '#create-account > button', () => {
-                // reset validation on new submit
-                let validated = true;
-                $(".vaidationMessage").addClass('hidden')
-                $(".form-floating > input").removeClass("border border-danger rounded");
-
-                // check if any fields are empty
-                $("#create-account > div input").each(function () {
-                    if ($(this).is("#termsAndCondtions")) {
-                        if (!$(this).prop("checked")) {
-                            $(".form-floating > input").addClass("border border-danger rounded");
-                            $('#MissingFields').removeClass("hidden");
-                            validated = false;
-                        }
-                    }
-                    else if ($(this).val() == "") {
-                        $(".form-floating > input").addClass("border border-danger rounded");
-                        $('#MissingFields').removeClass("hidden");
-                        validated = false;
-                    }
-                });
-
-                if ($("#password").val() != $("#passwordConfirm").val()) {
-                    $(".form-floating > #password").addClass("border border-danger rounded");
-                    $(".form-floating > #passwordConfirm").addClass("border border-danger rounded");
-                    $('#passwordMismatch').removeClass("hidden");
-                    validated = false;
-                }
-
-                // get users to check against once we know all fields are filled
-                $.getJSON(userDB, function (data) {
-                    data.users.forEach(user => {
-                        if ($("#email").val() === user.email) {
-                            $(".form-floating > #email").addClass("border border-danger rounded");
-                            $('#UserAlreadyExists').removeClass("hidden");
-                            validated = false;
-                        }
-                    });
-                    // by doing this, we only get the list of existing users once and save some bandwith
-                }).then(data => {
-                    if (validated) {
-                        //This is the best way I found to append the new user to the existing ones.
-                        let existingUsers = [];
-                        $.each(data.users, function (index, user) {
-                            existingUsers.push(user);
-                            console.log(existingUsers)
-                        });
-                        existingUsers.push({
-                            "firstName": $("#firstName").val(),
-                            "lastName": $("#lastName").val(),
-                            "title": $("#title").val(),
-                            "organization": $("#organization").val(),
-                            "email": $("#email").val(),
-                            "password": $("#password").val()
-                        });
-                        let newUserObject = {
-                            "users": existingUsers
-                        }
-                        console.log(newUserObject)
-                        $.ajax({
-                            url: 'https://jsonblob.com/api/jsonBlob/952011366311673856',
-                            type: 'PUT',
-                            data: JSON.stringify(newUserObject),
-                            contentType: "application/json; charset=utf-8",
-                            dataType: 'json',
-                            success: function (response, status, xhr) {
-                                console.log(response);
-                            },
-                            error: function (error) {
-                                console.log(error);
-                            }
-                            //Wait until call to api is complete then redirect to login page
-                        }).then(() => {
-                            console.log("HIT")
-                            window.location.replace("./index.html");
-                        });
-                    }
-                })
+        // get users to check against once we know all fields are filled
+        $.getJSON(userDB, function (data) {
+            data.users.forEach(user => {
+                users.push(user)
             });
-        </script>
-    </div>
+            // by doing this, we only get the list of existing users once and save some bandwith
+        }).then(data => {
+            let user = users[userId];
+            $("#name").html(user.firstName + " " + user.lastName);
+            $("#email").html(user.email);
+            $("#title").html(user.title);
+            $("#org").html(user.organization);
+        })
+
+        $.getJSON(podcastDB, function (data) {
+            data.podcasts.forEach(podcast => {
+                if (podcast.userId == userId) {
+                    podcasts.push(podcast)
+                }
+            });
+            // by doing this, we only get the list of existing users once and save some bandwith
+        }).then(() => {
+            podcasts.forEach(podcast => {
+                renderPodcast(podcast.title, podcast.author, podcast.doi, podcast.publishedDate, podcast.url, $("#podcasts"))
+            });
+        })
+
+    </script>
 </body>
 
 </html>

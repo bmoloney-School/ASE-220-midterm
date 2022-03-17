@@ -56,7 +56,7 @@
                             console.log("good Match!");
                             isValidated = true;
                             // redirect to podcasts page -- pass username in url so it can be used later. 
-                            window.location.replace("./index.html?first=" + user.firstName + "&last=" + user.lastName)
+                            window.location.replace("./index.html?id=" + data.users.indexOf(user))
                         }
                     }
                 });

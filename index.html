@@ -32,43 +32,45 @@
                 <li><a href="about.html" class="nav-link px-2 link-dark">About</a></li>
             </ul>
             <div class="col-md-3 text-end" id="loginButtons">
-                <a type="button" href="./signIn.html" class="btn btn-outline-primary me-2">Login</a>
+                <a type="button" href="./login.html" class="btn btn-outline-primary me-2">Login</a>
                 <a type="button" href="./createAccount.html" class="btn btn-primary">Sign-up</a>
             </div>
         </header>
     </div>
     <main>
-        <form id="filter" class="sticky-top px-4 py-3 w-25 rounded mb-2 ms-4">
+        <form id="filter" class="sticky-top px-4 py-3 w-100 rounded">
             <h1 class="h3 px-2">Filters</h1>
-            <div class="input-group input-group-sm mb-3">
-                <div class="input-group-prepend">
-                    <span class="input-group-text" id="inputGroup-sizing-sm">Year</span>
+            <div class="row">
+                <div class="input-group input-group-sm mb-3 col">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="inputGroup-sizing-sm">Year</span>
+                    </div>
+                    <input id="year-filter" type="text" class="form-control" placeholder="YYYY" aria-label="Small"
+                        aria-describedby="inputGroup-sizing-sm">
                 </div>
-                <input id="year-filter" type="text" class="form-control" placeholder="YYYY" aria-label="Small"
-                    aria-describedby="inputGroup-sizing-sm">
-            </div>
-            <div class="input-group input-group-sm mb-3">
-                <div class="input-group-prepend">
-                    <span class="input-group-text" id="inputGroup-sizing-sm">Author</span>
+                <div class="input-group input-group-sm mb-3 col">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="inputGroup-sizing-sm">Author</span>
+                    </div>
+                    <input id="author-filter" type="text" class="form-control" placeholder="name" aria-label="Small"
+                        aria-describedby="inputGroup-sizing-sm">
                 </div>
-                <input id="author-filter" type="text" class="form-control" placeholder="name" aria-label="Small"
-                    aria-describedby="inputGroup-sizing-sm">
-            </div>
-            <div class="input-group input-group-sm mb-3">
-                <div class="input-group-prepend">
-                    <span class="input-group-text" id="inputGroup-sizing-sm">DOI#</span>
+                <div class="input-group input-group-sm mb-3 col">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="inputGroup-sizing-sm">DOI#</span>
+                    </div>
+                    <input id="doi-filter" type="text" class="form-control" placeholder="#" aria-label="Small"
+                        aria-describedby="inputGroup-sizing-sm">
                 </div>
-                <input id="doi-filter" type="text" class="form-control" placeholder="#" aria-label="Small"
-                    aria-describedby="inputGroup-sizing-sm">
-            </div>
-            <div class="input-group input-group-sm mb-3">
-                <div class="input-group-prepend">
-                    <span class="input-group-text" id="inputGroup-sizing-sm">Keyword</span>
+                <div class="input-group input-group-sm mb-3 col">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="inputGroup-sizing-sm">Keyword</span>
+                    </div>
+                    <input id="keyword-filter" type="text" class="form-control" placeholder="(Music, Computing, etc)"
+                        aria-label="Small" aria-describedby="inputGroup-sizing-sm">
                 </div>
-                <input id="keyword-filter" type="text" class="form-control" placeholder="(Science, Computing, etc)"
-                    aria-label="Small" aria-describedby="inputGroup-sizing-sm">
             </div>
-            <button id="updateFilters" class="btn btn-outline-primary" type="button">Update</button>
+            <button id="updateFilters" class="btn btn-outline-primary" type="button">Search</button>
         </form>
         <div class="container align-content-center">
             <div class="row" id="podcastHolder">
