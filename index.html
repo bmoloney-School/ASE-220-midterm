@@ -95,16 +95,22 @@
         }
 
         const userId = getAllUrlParams().id;
-        const podcastDB = "https://jsonblob.com/api/jsonBlob/952297235711016960"
+        const podcastDB = "https://jsonblob.com/api/jsonBlob/952297235711016960";
+        const userDB = "https://jsonblob.com/api/jsonBlob/952011366311673856";
 
-        function renderPodcast(title, author, userId, doi, date, link, parentElement) {
+
+
+        function renderPodcast(title, author, userId, user, doi, date, link, parentElement) {
+
+
             const podcastCard = `
                 <div class="card w-75 my-4">
                     <h5 class="card-header">${title}</h5>
                     <div class="card-body container align-content-center">
-                        <h5 class="card-title">Author:  <a href="./user.html?id=${userId}"">${author}</a></h5>
+                        <h5 class="card-title">Author: ${author}</h5>
                         <p class="card-text">DOI#:  ${doi}</p>
                         <p class="card-text">Date:  ${date}</p>
+                        <p class="card-text">Published By: <a href="./user.html?id=${userId}"">${user}</a></p>
                         <a href="${link}" class="btn btn-primary" target="_blank">Listen</a>
                     </div>
                 </div>`
@@ -145,7 +151,6 @@
                     if (!(podcast.author.includes(currentFilters.author) || currentFilters.author == "")) {
                         showPodcast = false;
                     }
-                    console.log(podcast.keywords.includes(currentFilters.keyword))
                     if (!(podcast.keywords.includes(currentFilters.keyword) || currentFilters.keyword == "")) {
                         showPodcast = false;
                     }
@@ -154,7 +159,19 @@
                             renderHeader(podcast.category)
                         }
                         lastCategory = podcast.category;
-                        renderPodcast(podcast.title, podcast.author, podcast.userId, podcast.DOI, podcast.publishedDate, podcast.url, $("#podcastHolder"))
+                        $.ajax({
+                            type: 'GET',
+                            url: userDB,
+                            dataType: 'json',
+                            success: function (data) {
+
+                                let user = data.users[podcast.userId].firstName + " " + data.users[podcast.userId].lastName;
+                                console.log(user)
+                                renderPodcast(podcast.title, podcast.author, podcast.userId, user, podcast.DOI, podcast.publishedDate, podcast.url, $("#podcastHolder"))
+                            },
+                            data: {},
+                            async: false
+                        });
                     }
                 })
 
