@@ -18,8 +18,8 @@
     <style>
     </style>
     <!-- Custom styles for this template -->
-    <link href="./styles/template.css" rel="stylesheet">
-    <link href="./styles/user.css" rel="stylesheet">
+    <link href="../styles/template.css" rel="stylesheet">
+    <link href="../styles/user.css" rel="stylesheet">
 </head>
 
 <body class="user-layout">
@@ -27,10 +27,10 @@
         <header
             class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
             <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
-                <li><a href="./index.html" class="nav-link px-2 link-dark">Home</a></li>
-                <li><a href="./user.html" class="nav-link px-2 link-secondary">User Information</a></li>
-                <li><a href="./rules.html" class="nav-link px-2 link-dark">Rules</a></li>
-                <li><a href="about.html" class="nav-link px-2 link-dark">About</a></li>
+                <li><a href="../index.html" class="nav-link px-2 link-dark">Home</a></li>
+                <li><a href="../user.html" class="nav-link px-2 link-secondary">User Information</a></li>
+                <li><a href="../rules.html" class="nav-link px-2 link-dark">Rules</a></li>
+                <li><a href="../about.html" class="nav-link px-2 link-dark">About</a></li>
             </ul>
             <div class="col-md-3 text-end" id="loginButtons">
                 <a type="button" href="./signIn.html" class="btn btn-outline-primary me-2">Login</a>
@@ -59,6 +59,10 @@
                     <h1 class="h4">Organization:</h1>
                     <p id="org"></p>
                 </div>
+                <div>
+                    <hr />
+                    <a href="edit.html" class="btn btn-primary mx-3 px-4">Edit</a>
+                </div>
             </div>
             <div class="col" id="podcasts">
                 <h2></h2>
@@ -66,26 +70,22 @@
             </div>
         </div>
     </main>
-    <script src="./shared.js"></script>
+    <script src="../shared.js"></script>
     <script>
         const userId = getAllUrlParams().id;
-        const userDB = "https://jsonblob.com/api/jsonBlob/952011366311673856";
-        const podcastDB = "https://jsonblob.com/api/jsonBlob/952297235711016960";
 
         if (!userId) {
             window.location.replace("./login.html")
         }
 
-        let users = []
-        let podcasts = []
-
         function renderPodcast(title, author, doi, date, link, parentElement) {
+            console.log(doi, date)
             const podcastCard = `
                 <div class="card w-75 my-4">
                     <h5 class="card-header">${title}</h5>
                     <div class="card-body container align-content-center">
                         <h5 class="card-title">Author:  ${author}</h5>
-                        <p class="card-text">DOI#:  ${doi}</p>
+                        <p class="card-text">DOI:  ${doi}</p>
                         <p class="card-text">Date:  ${date}</p>
                         <a href="${link}" class="btn btn-primary" target="_blank">Listen</a>
                     </div>
@@ -94,31 +94,23 @@
         }
 
         // get users to check against once we know all fields are filled
-        $.getJSON(userDB, function (data) {
-            data.users.forEach(user => {
-                users.push(user)
-            });
-            // by doing this, we only get the list of existing users once and save some bandwith
-        }).then(data => {
-            let user = users[userId];
-            $("#name").html(user.firstName + " " + user.lastName);
-            $("#email").html(user.email);
-            $("#title").html(user.title);
-            $("#org").html(user.organization);
+        $.getJSON(backend + '/user/' + userId, function (user) {
+            console.log(user)
+            if (user) {
+                $("#name").text(user.firstName + " " + user.lastName);
+                $("#email").text(user.email);
+                $("#title").text(user.title);
+                $("#org").text(user.organization);
+            }
+            $.getJSON(backend + '/podcasts/author/' + user._id, function (data) {
+                console.log(data);
+                data.podcasts.forEach(podcast => {
+                    renderPodcast(podcast.description, user.firstName + ' ' + user.lastName, podcast.DOI, podcast.publishedDate, "http://www.google.com", $("#podcasts"))
+                });
+            })
+
         })
 
-        $.getJSON(podcastDB, function (data) {
-            data.podcasts.forEach(podcast => {
-                if (podcast.userId == userId) {
-                    podcasts.push(podcast)
-                }
-            });
-            // by doing this, we only get the list of existing users once and save some bandwith
-        }).then(() => {
-            podcasts.forEach(podcast => {
-                renderPodcast(podcast.title, podcast.author, podcast.DOI, podcast.publishedDate, podcast.url, $("#podcasts"))
-            });
-        })
         updateLoginButtons(userId);
         updateLinks();
     </script>

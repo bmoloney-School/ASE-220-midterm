@@ -1,5 +1,5 @@
-// Functions shared by multiple pages
-
+// Functions & values shared by multiple pages
+const backend = "https://podscholar.herokuapp.com/api";
 
 function getAllUrlParams(url) {
     // get query string from url (optional) or window
