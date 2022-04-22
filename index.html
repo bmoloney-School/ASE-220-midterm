@@ -98,17 +98,17 @@
         const userId = getAllUrlParams().id;
 
 
-        function renderPodcast(title, author, userId, doi, date, category, link, parentElement) {
+        function renderPodcast(title, author, authorId, doi, date, category, link, parentElement) {
 
             const podcastCard = `
                 <div class="card w-75 my-4">
                     <h5 class="card-header">${title}</h5>
                     <div class="card-body container align-content-center">
-                        <h5 class="card-title">Author: ${author}</h5>
+                        <a href="./author.html?author=${authorId}&id=${userId}"><h5 class="card-title">Author: ${author}</h5><a/>
                         <p class="card-text">DOI:  ${doi}</p>
                         <p class="card-text">Date:  ${date}</p>
                         <p class="card-text">Category:  ${category}</p>
-                        <a href="${link}" class="btn btn-primary" target="_blank">Listen</a>
+                        <a href="${link}" class="btn btn-primary">Listen</a>
                     </div>
                 </div>`
             parentElement.append(podcastCard);
@@ -163,7 +163,14 @@
                     $.getJSON(backend + '/user/' + podcast.authorId, function (author) {
 
                     }).then((author) => {
-                        renderPodcast(podcast.Title, author.firstName + ' ' + author.lastName, podcast.authorId, podcast.DOI, podcast.publishedDate, podcast.category.replace('-', ' '), "http://google.com", $("#podcastHolder"))
+                        renderPodcast(podcast.Title,
+                            author.firstName + ' ' + author.lastName,
+                            podcast.authorId,
+                            podcast.DOI,
+                            podcast.publishedDate,
+                            podcast.category.replace('-', ' '),
+                            "./podcast/listen.html?podcast=" + podcast._id + '&id=' + userId,
+                            $("#podcastHolder"))
                     });
                 });
 
