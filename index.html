@@ -98,7 +98,7 @@
         const userId = getAllUrlParams().id;
 
 
-        function renderPodcast(title, author, authorId, doi, date, category, link, parentElement) {
+        function renderPodcast(title, author, authorId, doi, date, category, link, parentElement, podcastId) {
 
             const podcastCard = `
                 <div class="card w-75 my-4">
@@ -109,9 +109,18 @@
                         <p class="card-text">Date:  ${date}</p>
                         <p class="card-text">Category:  ${category}</p>
                         <a href="${link}" class="btn btn-primary">Listen</a>
+                        <button onclick=addBookmark(${podcastId}) class="btn btn-primary">Bookmark</button>
                     </div>
                 </div>`
             parentElement.append(podcastCard);
+        }
+
+        function addBookmark(podcastId) {
+            if (!userId) {
+                window.location.replace("./login.html")
+            }
+            //TODO add bookmark logic
+
         }
 
         function updateFilters() {
@@ -170,7 +179,7 @@
                             podcast.publishedDate,
                             podcast.category.replace('-', ' '),
                             "./podcast/listen.html?podcast=" + podcast._id + '&id=' + userId,
-                            $("#podcastHolder"))
+                            $("#podcastHolder"), podcast._id)
                     });
                 });
 
